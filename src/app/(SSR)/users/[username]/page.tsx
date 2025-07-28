@@ -24,8 +24,11 @@ async function getUser(username: string): Promise<UnsplashUser> {
 }
 
 export async function generateMetadata({
-    params: { username },
-}: PageProps): Promise<Metadata> {
+    params,
+}: {
+    params: Promise<PageProps['params']>;
+}): Promise<Metadata> {
+    const { username }: PageProps['params'] = await params;
     const user = await getUser(username);
 
     return {
@@ -33,7 +36,8 @@ export async function generateMetadata({
     };
 }
 
-async function Page({ params: { username } }: PageProps) {
+async function Page({ params }: { params: Promise<PageProps['params']> }) {
+    const { username }: PageProps['params'] = await params;
     const user = await getUser(username);
 
     return (

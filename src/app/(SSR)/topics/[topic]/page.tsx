@@ -4,12 +4,17 @@ import { Metadata } from 'next';
 
 interface PageProps {
     params: { topic: string };
-    searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export function generateMetadata({ params: { topic } }: PageProps): Metadata {
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<PageProps['params']>;
+}): Promise<Metadata> {
+    const { topic }: PageProps['params'] = await params;
+
     return {
-        title: topic + ' - NextJS Image Gallery',
+        title: `${topic} - NextJS 13.4 Image Gallery`,
     };
 }
 
@@ -17,7 +22,9 @@ export function generateStaticParams() {
     return ['health', 'fitness', 'coding'].map((topic) => ({ topic }));
 }
 
-async function Page({ params: { topic } }: PageProps) {
+async function Page({ params }: { params: Promise<PageProps['params']> }) {
+    const { topic }: PageProps['params'] = await params;
+
     const response = await fetch(
         `https://api.unsplash.com/photos/random?query=${topic}&count=30&client_id=${process.env.UNSPLASH_ACCESS_KEY}`,
         { cache: 'force-cache' },
